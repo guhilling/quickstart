@@ -16,14 +16,18 @@
  */
 package org.jboss.as.quickstarts.helloworld;
 
+import javax.enterprise.context.ApplicationScoped;
+
 /**
  * A simple CDI service which is able to say hello to someone
  *
  * @author Pete Muir
  *
  */
+@ApplicationScoped
 public class HelloService {
 
+    //@Transactional
     String createHelloMessage(String name) {
         return "Hello " + name + "!";
     }

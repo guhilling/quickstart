@@ -1,0 +1,18 @@
+package de.hilling.jee.service;
+
+import de.hilling.jee.payload.Greeting;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("/json")
+@Produces(MediaType.APPLICATION_JSON)
+public class MarshallingResource {
+
+    @GET
+    public Greeting pong() {
+        return new Greeting("Hello", "Gunnar");
+    }
+}

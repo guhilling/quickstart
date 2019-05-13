@@ -1,0 +1,23 @@
+sudo: false
+dist: trusty
+group: edge
+
+language: java
+
+install: /bin/true
+
+matrix:
+  include:
+  - name: "Java 11"
+    jdk: openjdk11
+
+script:
+  - build/travis-build
+
+cache:
+  directories:
+    - "$HOME/.m2/repository"
+    - "$HOME/.sonar/cache"
+
+before_cache:
+  build/cleanup-snapshots

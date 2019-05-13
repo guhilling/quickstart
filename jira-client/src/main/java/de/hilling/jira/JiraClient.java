@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.as.quickstarts.jms;
+package de.hilling.jira;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.JMSConsumer;
 import javax.jms.JMSContext;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,8 +25,8 @@ import javax.naming.NamingException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class HelloWorldJMSClient {
-    private static final Logger log = Logger.getLogger(HelloWorldJMSClient.class.getName());
+public class JiraClient {
+    private static final Logger log = Logger.getLogger(JiraClient.class.getName());
 
     // Set up all the default values
     private static final String DEFAULT_MESSAGE = "Hello, World!";
@@ -74,14 +73,6 @@ public class HelloWorldJMSClient {
                 // Send the specified number of messages
                 for (int i = 0; i < count; i++) {
                     context.createProducer().send(destination, content);
-                }
-
-                // Create the JMS consumer
-                JMSConsumer consumer = context.createConsumer(destination);
-                // Then receive the same number of messages that were sent
-                for (int i = 0; i < count; i++) {
-                    String text = consumer.receiveBody(String.class, 5000);
-                    log.info("Received message with content " + text);
                 }
             }
         } catch (NamingException e) {

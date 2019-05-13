@@ -474,6 +474,8 @@
                 <module>xml-jaxp</module>
                 <module>jee-simple</module>
                 <module>jee-simple-jaxrs</module>
+                <module>jira-creator</module>
+                <module>jira-client</module>
             </modules>
         </profile>
         <profile>

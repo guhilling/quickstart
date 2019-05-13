@@ -1,0 +1,1 @@
+jms-queue add --queue-address=JIRARequest --durable --entries=queue/jira,java:jboss/exported/jms/queue/jira

@@ -21,7 +21,6 @@ public class MarshallingManually {
                                        .add("itemId", itemId)
                                        .build();
         return Response.ok()
-                       .header("Content-Type", "application/json")
                        .entity(content)
                        .build();
     }

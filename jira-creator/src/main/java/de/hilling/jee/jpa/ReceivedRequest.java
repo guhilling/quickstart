@@ -12,6 +12,8 @@ public class ReceivedRequest {
     @Id
     private long id;
     private String type;
+
+    private String project;
     private String description;
     private String summary;
     private LocalDateTime requestedAt;
@@ -61,5 +63,12 @@ public class ReceivedRequest {
         this.requestedAt = requestedAt;
     }
 
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
 
 }

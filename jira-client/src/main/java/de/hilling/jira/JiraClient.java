@@ -29,7 +29,7 @@ public class JiraClient {
     private static final Logger log = Logger.getLogger(JiraClient.class.getName());
 
     // Set up all the default values
-    private static final String DEFAULT_MESSAGE = "{ \"type\": \"Bug\", \"summary\": \"Alles kaputt!\"}";
+    private static final String DEFAULT_MESSAGE = "{ \"type\": \"Task\", \"summary\": \"Alles kaputt!\", \"project\": \"RD\"}";
     private static final String DEFAULT_CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
     private static final String DEFAULT_DESTINATION = "jms/queue/jira";
     private static final String DEFAULT_MESSAGE_COUNT = "1";

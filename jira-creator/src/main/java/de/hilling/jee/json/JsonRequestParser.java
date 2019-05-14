@@ -16,6 +16,7 @@ public class JsonRequestParser {
         final JsonReader reader = Json.createReader(new StringReader(json));
         final JsonObject jsonObject = reader.readObject();
         result.setType(jsonObject.getString("type"));
+        result.setProject(jsonObject.getString("project"));
         result.setSummary(jsonObject.getString("summary"));
         return result;
     }

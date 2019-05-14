@@ -32,7 +32,7 @@ public class RequestReceiver implements MessageListener {
 
         final ReceivedRequest request = new ReceivedRequest();
         try {
-            request.setContent(message.getBody(String.class));
+            request.setSummary(message.getBody(String.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

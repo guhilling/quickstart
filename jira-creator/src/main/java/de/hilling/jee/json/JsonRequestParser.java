@@ -1,4 +1,4 @@
-package de.hilling.jee;
+package de.hilling.jee.json;
 
 import de.hilling.jee.jpa.ReceivedRequest;
 
@@ -15,7 +15,8 @@ public class JsonRequestParser {
         final ReceivedRequest result = new ReceivedRequest();
         final JsonReader reader = Json.createReader(new StringReader(json));
         final JsonObject jsonObject = reader.readObject();
-        result.setContent(jsonObject.getString("content"));
+        result.setType(jsonObject.getString("type"));
+        result.setSummary(jsonObject.getString("summary"));
         return result;
     }
 

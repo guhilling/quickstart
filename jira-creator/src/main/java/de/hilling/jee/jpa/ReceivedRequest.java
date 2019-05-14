@@ -11,14 +11,14 @@ public class ReceivedRequest {
     @GeneratedValue
     @Id
     private long id;
-    private String title;
+    private String type;
     private String description;
-    private String content;
+    private String summary;
     private LocalDateTime requestedAt;
 
     @Override
     public String toString() {
-        return String.format("request with id %d and content %s", id, content);
+        return String.format("request with id %d and content %s", id, summary);
     }
 
     public long getId() {
@@ -29,12 +29,12 @@ public class ReceivedRequest {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getType() {
+        return type;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setType(String title) {
+        this.type = title;
     }
 
     public String getDescription() {
@@ -45,12 +45,12 @@ public class ReceivedRequest {
         this.description = description;
     }
 
-    public String getContent() {
-        return content;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setSummary(String content) {
+        this.summary = content;
     }
 
     public LocalDateTime getRequestedAt() {

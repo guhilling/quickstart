@@ -33,8 +33,8 @@ public class JiraClient {
     private static final String DEFAULT_CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
     private static final String DEFAULT_DESTINATION = "jms/queue/jira";
     private static final String DEFAULT_MESSAGE_COUNT = "1";
-    private static final String DEFAULT_USERNAME = "jira";
-    private static final String DEFAULT_PASSWORD = "jira1";
+    private static final String DEFAULT_USERNAME = "gunnar";
+    private static final String DEFAULT_PASSWORD = "gunnar1";
     private static final String INITIAL_CONTEXT_FACTORY = "org.wildfly.naming.client.WildFlyInitialContextFactory";
     private static final String PROVIDER_URL = "http-remoting://127.0.0.1:8080";
 

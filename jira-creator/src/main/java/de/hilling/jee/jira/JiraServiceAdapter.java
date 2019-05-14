@@ -1,7 +1,12 @@
 package de.hilling.jee.jira;
 
-import javax.enterprise.context.RequestScoped;
+import de.hilling.jee.jpa.ReceivedRequest;
 
-@RequestScoped
+import javax.ejb.Stateless;
+
+@Stateless
 public class JiraServiceAdapter {
+    public void createIssue(ReceivedRequest request) {
+        throw new RuntimeException("not yet implemented");
+    }
 }

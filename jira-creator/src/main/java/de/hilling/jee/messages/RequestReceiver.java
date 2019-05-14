@@ -21,22 +21,26 @@ import javax.jms.MessageListener;
 public class RequestReceiver implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestReceiver.class);
-
+    @Inject
+    RequestPersistenceService requestPersistenceService;
     @Inject
     private JiraServiceAdapter serviceAdapter;
 
-    @Inject
-    RequestPersistenceService requestPersistenceService;
-
     @Override
     public void onMessage(Message message) {
+        LOG.debug("forwarding message {}", message);
         final ReceivedRequest request = new ReceivedRequest();
         try {
             request.setContent(message.getBody(String.class));
-            requestPersistenceService.storeRequest(request);
-            LOG.info("received message {}", message);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+        try {
+            serviceAdapter.createIssue(request);
+            LOG.debug("created issue {}", message);
+        } catch (RuntimeException e) {
+            requestPersistenceService.storeRequest(request);
+            LOG.error("failed on message {} (will retry)", message);
         }
     }
 }

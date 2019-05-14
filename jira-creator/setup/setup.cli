@@ -1,1 +1,4 @@
 jms-queue add --queue-address=JIRARequest --durable --entries=queue/jira,java:jboss/exported/jms/queue/jira
+
+/subsystem=logging/logger=de.hilling:add(level=DEBUG, use-parent-handlers=false, handlers=[CONSOLE])
+/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=DEBUG

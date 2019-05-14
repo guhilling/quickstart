@@ -29,12 +29,14 @@ public class RequestReceiver implements MessageListener {
     @Override
     public void onMessage(Message message) {
         LOG.debug("forwarding message {}", message);
+
         final ReceivedRequest request = new ReceivedRequest();
         try {
             request.setContent(message.getBody(String.class));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         try {
             serviceAdapter.createIssue(request);
             LOG.debug("created issue {}", message);

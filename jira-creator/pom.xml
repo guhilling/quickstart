@@ -17,14 +17,11 @@
         </license>
     </licenses>
 
-    <build>
-        <finalName>jira</finalName>
-    </build>
-
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+        <junit.version>5.4.2</junit.version>
     </properties>
 
     <dependencies>
@@ -61,31 +58,63 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.1</version>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.hilling.junit.cdi</groupId>
+            <artifactId>cdi-test-core</artifactId>
+            <version>2.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.4.1</version>
+            <groupId>de.hilling.junit.cdi</groupId>
+            <artifactId>cdi-test-microprofile</artifactId>
+            <version>1.2.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+            <version>3.1.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-weld</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>1.1.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -94,8 +123,24 @@
             <version>2.22.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-api</artifactId>
+            <version>1.9.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
+    <build>
+        <finalName>jira</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+        </plugins>
+    </build>
 
     <repositories>
         <repository>

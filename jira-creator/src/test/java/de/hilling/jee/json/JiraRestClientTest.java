@@ -20,9 +20,6 @@ public class JiraRestClientTest {
     void queryAllProjects() {
         final JiraRestClient jiraClient = new AsynchronousJiraRestClientFactory()
                 .createWithBasicHttpAuthentication(uri, "gunnar@hilling.de", "CCaBsfvcRH6ov8mudHiG6EFA");
-        //final Issue issue = jiraClient.getIssueClient()
-        //                              .getIssue("CDIT-24")
-        //                              .claim();
         final Iterable<BasicProject> projects = jiraClient.getProjectClient()
                                                        .getAllProjects()
                                                        .claim();

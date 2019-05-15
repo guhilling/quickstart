@@ -23,15 +23,15 @@ public class JiraServiceAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JiraServiceAdapter.class);
 
-    @ConfigProperty(name = "jira.uri")
+    @ConfigProperty(name = "jira.uri", defaultValue = "http://localhost:8081")
     @Inject
-    private URI jiraUri;
+    private String jiraUri;
 
-    @ConfigProperty(name = "jira.username")
+    @ConfigProperty(name = "jira.username", defaultValue = "dummy")
     @Inject
     private String username;
 
-    @ConfigProperty(name = "jira.password")
+    @ConfigProperty(name = "jira.password", defaultValue = "dummy")
     @Inject
     private String password;
 
@@ -64,6 +64,6 @@ public class JiraServiceAdapter {
 
     private JiraRestClient createClient() {
         return new AsynchronousJiraRestClientFactory()
-                .createWithBasicHttpAuthentication(jiraUri, username, password);
+                .createWithBasicHttpAuthentication(URI.create(jiraUri), username, password);
     }
 }

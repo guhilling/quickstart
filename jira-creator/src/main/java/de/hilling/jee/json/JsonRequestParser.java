@@ -14,14 +14,15 @@ public class JsonRequestParser {
 
     public ReceivedRequest parse(String json) {
         final ReceivedRequest result = new ReceivedRequest();
-        final JsonReader reader = Json.createReader(new StringReader(json));
-        final JsonObject jsonObject = reader.readObject();
-        result.setDescription(jsonObject.getString("description"));
-        result.setProject(jsonObject.getString("project"));
-        result.setType(jsonObject.getString("type"));
-        result.setSummary(jsonObject.getString("summary"));
-        result.setRequestedAt(LocalDateTime.now());
-        return result;
+        try (JsonReader reader = Json.createReader(new StringReader(json))) {
+            final JsonObject jsonObject = reader.readObject();
+            result.setDescription(jsonObject.getString("description"));
+            result.setProject(jsonObject.getString("project"));
+            result.setType(jsonObject.getString("type"));
+            result.setSummary(jsonObject.getString("summary"));
+            result.setRequestedAt(LocalDateTime.now());
+            return result;
+        }
     }
 
 }

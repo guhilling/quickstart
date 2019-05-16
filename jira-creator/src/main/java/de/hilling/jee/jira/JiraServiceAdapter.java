@@ -16,23 +16,34 @@ public class JiraServiceAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JiraServiceAdapter.class);
 
-    @Inject
-    private JiraServerConfiguration serverConfiguration;
+    private final JiraServerConfiguration serverConfiguration;
+    private final JiraRestClient jiraRestClient;
 
     @Inject
-    private JiraRestClient jiraRestClient;
+    public JiraServiceAdapter(JiraServerConfiguration serverConfiguration, JiraRestClient jiraRestClient) {
+        this.serverConfiguration = serverConfiguration;
+        this.jiraRestClient = jiraRestClient;
+    }
+
+    protected JiraServiceAdapter() {
+        this(null, null);
+    }
 
     public void createIssue(ReceivedRequest request) {
-        Long issueTypeId = serverConfiguration.issueIdForType(request.getType());
-        final IssueInput issueInput = new IssueInputBuilder().setIssueTypeId(issueTypeId)
-                                                             .setDescription(request.getDescription())
-                                                             .setSummary(request.getSummary())
-                                                             .setProjectKey(request.getProject())
-                                                             .build();
+        try {
+            Long issueTypeId = serverConfiguration.issueIdForType(request.getType());
+            final IssueInput issueInput = new IssueInputBuilder().setIssueTypeId(issueTypeId)
+                                                                 .setDescription(request.getDescription())
+                                                                 .setSummary(request.getSummary())
+                                                                 .setProjectKey(request.getProject())
+                                                                 .build();
 
-        final BasicIssue issue = jiraRestClient.getIssueClient()
-                                               .createIssue(issueInput)
-                                               .claim();
-        LOG.debug("created issue {}", issue);
+            final BasicIssue issue = jiraRestClient.getIssueClient()
+                                                   .createIssue(issueInput)
+                                                   .claim();
+            LOG.debug("created issue {}", issue);
+        } catch (RuntimeException re) {
+            LOG.error("creating issue from request {} failed", request, re);
+        }
     }
 }

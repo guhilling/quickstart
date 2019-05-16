@@ -5,7 +5,6 @@ import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientF
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;
@@ -27,22 +26,18 @@ public class JiraServerConfiguration {
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
 
-    @PostConstruct
-    public void init() {
-        doInit();
-    }
-
-    private boolean doInit() {
-        try (JiraRestClient restClient = provideClient()) {
-            restClient.getMetadataClient()
-                      .getIssueTypes()
-                      .claim()
-                      .forEach(it -> issueTypes.put(it.getName(), it.getId()));
-            initialized.set(true);
-            return true;
-        } catch (IOException e) {
-            LOG.error("io", e);
-            return false;
+    private synchronized void assertInitialized() {
+        if (!initialized.get()) {
+            try (JiraRestClient restClient = createClient()) {
+                restClient.getMetadataClient()
+                          .getIssueTypes()
+                          .claim()
+                          .forEach(it -> issueTypes.put(it.getName(), it.getId()));
+                initialized.set(true);
+            } catch (Exception e) {
+                LOG.error("error initializing server config", e);
+                throw new RuntimeException("server config not found");
+            }
         }
     }
 
@@ -50,6 +45,11 @@ public class JiraServerConfiguration {
     @Produces
     @RequestScoped
     public JiraRestClient provideClient() {
+        assertInitialized();
+        return createClient();
+    }
+
+    private JiraRestClient createClient() {
         return new AsynchronousJiraRestClientFactory()
                 .createWithBasicHttpAuthentication(URI.create("https://test-jira.isios.com/test-jira"),
                         "test",
@@ -65,6 +65,7 @@ public class JiraServerConfiguration {
     }
 
     public Long issueIdForType(String type) {
+        assertInitialized();
         return issueTypes.get(type);
     }
 }

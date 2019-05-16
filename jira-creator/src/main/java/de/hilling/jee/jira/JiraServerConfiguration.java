@@ -13,6 +13,7 @@ import javax.enterprise.inject.Produces;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Cached Daten über Server-Configuration wie IssueTypes, Projekte, etc.
@@ -24,17 +25,25 @@ public class JiraServerConfiguration {
 
     private HashMap<String, Long> issueTypes = new HashMap<>();
 
+    private AtomicBoolean initialized = new AtomicBoolean(false);
+
     @PostConstruct
     public void init() {
+        doInit();
+    }
+
+    private boolean doInit() {
         try (JiraRestClient restClient = provideClient()) {
             restClient.getMetadataClient()
                       .getIssueTypes()
                       .claim()
                       .forEach(it -> issueTypes.put(it.getName(), it.getId()));
+            initialized.set(true);
+            return true;
         } catch (IOException e) {
             LOG.error("io", e);
+            return false;
         }
-
     }
 
 

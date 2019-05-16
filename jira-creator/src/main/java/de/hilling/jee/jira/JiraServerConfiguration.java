@@ -2,6 +2,7 @@ package de.hilling.jee.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -25,6 +27,16 @@ public class JiraServerConfiguration {
     private HashMap<String, Long> issueTypes = new HashMap<>();
 
     private AtomicBoolean initialized = new AtomicBoolean(false);
+
+    @Inject
+    @ConfigProperty(name = "jira.uri", defaultValue = "http://localhost:8081")
+    private String jiraURI;
+    @Inject
+    @ConfigProperty(name = "jira.username")
+    private String jiraUsername;
+    @Inject
+    @ConfigProperty(name = "jira.password")
+    private String jiraPassword;
 
     private synchronized void assertInitialized() {
         if (!initialized.get()) {
@@ -51,9 +63,9 @@ public class JiraServerConfiguration {
 
     private JiraRestClient createClient() {
         return new AsynchronousJiraRestClientFactory()
-                .createWithBasicHttpAuthentication(URI.create("https://test-jira.isios.com/test-jira"),
-                        "test",
-                        "test");
+                .createWithBasicHttpAuthentication(URI.create(jiraURI),
+                        jiraUsername,
+                        jiraPassword);
     }
 
     public void disposeJiraClient(@Disposes JiraRestClient client) {

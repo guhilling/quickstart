@@ -10,8 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.inject.Inject;
 
 @ExtendWith(CdiTestJunitExtension.class)
-@ConfigPropertyValue(name = "jira.username", value = "tester")
-@ConfigPropertyValue(name = "jira.password", value = "tester1")
+@ConfigPropertyValue(name = "jira.username", value = "gunnar@hilling.de")
+@ConfigPropertyValue(name = "jira.uri", value = "https://hilling.atlassian.net")
 class JiraServiceAdapterTest {
 
     @Inject
@@ -22,16 +22,14 @@ class JiraServiceAdapterTest {
     @BeforeEach
     void setUp() {
         request = new ReceivedRequest();
+        request.setType("Bug");
+        request.setProject("RD");
+        request.setDescription("Detaillierte Beschreibung.");
+        request.setSummary("Überschrift");
     }
 
     @Test
-    void createIssue() {
-        serviceAdapter.createIssue(request);
-    }
-
-    @Test
-    @ConfigPropertyValue(name = "jira.uri", value = "https://hilling.atlassian.net")
-    public void createIssueOnOtherSystem() {
+    void createIssueOnOtherSystem() {
         serviceAdapter.createIssue(request);
     }
 }

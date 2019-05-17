@@ -4,66 +4,59 @@ import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import de.hilling.jee.jpa.ReceivedRequest;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.net.URI;
-import java.util.HashMap;
 
-@ApplicationScoped
+@RequestScoped
 public class JiraServiceAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JiraServiceAdapter.class);
 
-    @ConfigProperty(name = "jira.uri", defaultValue = "http://localhost:8081")
+    private final JiraServerConfiguration serverConfiguration;
+    private final JiraRestClient jiraRestClient;
+
     @Inject
-    private String jiraUri;
-
-    @ConfigProperty(name = "jira.username", defaultValue = "dummy")
-    @Inject
-    private String username;
-
-    @ConfigProperty(name = "jira.password", defaultValue = "dummy")
-    @Inject
-    private String password;
-
-    private HashMap<String, Long> issueTypes = new HashMap<>();
-
-    @PostConstruct
-    public void init() {
-        createClient().getMetadataClient()
-                      .getIssueTypes()
-                      .claim()
-                      .forEach(i -> issueTypes.put(i.getName(), i.getId()));
+    public JiraServiceAdapter(JiraServerConfiguration serverConfiguration, JiraRestClient jiraRestClient) {
+        this.serverConfiguration = serverConfiguration;
+        this.jiraRestClient = jiraRestClient;
     }
 
-    public void createIssue(@NotNull @Valid ReceivedRequest request) {
-        long issueTypeId = issueTypes.get(request.getType());
+    protected JiraServiceAdapter() {
+        this(null, null);
+    }
+
+    public void createIssue(ReceivedRequest request) {
         try {
+            Long issueTypeId = serverConfiguration.issueIdForType(request.getType());
             final IssueInput issueInput = new IssueInputBuilder().setIssueTypeId(issueTypeId)
                                                                  .setDescription(request.getDescription())
                                                                  .setSummary(request.getSummary())
                                                                  .setProjectKey(request.getProject())
                                                                  .build();
-            final BasicIssue issue = createClient().getIssueClient()
+
+            final BasicIssue issue = jiraRestClient.getIssueClient()
                                                    .createIssue(issueInput)
                                                    .claim();
             LOG.debug("created issue {}", issue);
-        } catch (Exception e) {
-            LOG.error("error", e);
+        } catch (RuntimeException re) {
+            LOG.error("creating issue from request {} failed", request, re);
+            throw re;
         }
     }
 
-    private JiraRestClient createClient() {
-        return new AsynchronousJiraRestClientFactory()
-                .createWithBasicHttpAuthentication(URI.create(jiraUri), username, password);
+    public void describeType(String type) {
+        try {
+            jiraRestClient.getMetadataClient()
+                          .getIssueTypes()
+                          .claim()
+                          .forEach(t -> LOG.debug("type {}", t));
+        } catch (RuntimeException re) {
+            LOG.error("finding type  {} failed", type, re);
+            throw re;
+        }
     }
 }

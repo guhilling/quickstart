@@ -32,4 +32,9 @@ class JiraServiceAdapterTest {
     void createIssueOnOtherSystem() {
         serviceAdapter.createIssue(request);
     }
+
+    @Test
+    void describeIssueType() {
+        serviceAdapter.describeType(request.getType());
+    }
 }

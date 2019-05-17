@@ -21,17 +21,18 @@ class ContainerTest {
             .withPassword("test");
 
     @Test
-    void demoA() {
+    void justAssert() {
         assertTrue(postgresqlContainer.isRunning());
     }
 
     @Test
-    void demoB() throws SQLException {
+    void useDatabase() throws SQLException {
         final String jdbcUrl = postgresqlContainer.getJdbcUrl();
         final String testQueryString = postgresqlContainer.getTestQueryString();
         Connection connection = DriverManager.getConnection(jdbcUrl, "gunnar", "test");
         connection.createStatement()
                   .executeQuery(testQueryString);
-        assertTrue(postgresqlContainer.isRunning());
+        final String logs = postgresqlContainer.getLogs();
+        System.out.println(logs);
     }
 }

@@ -6,15 +6,19 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import de.hilling.jee.jpa.ReceivedRequest;
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -35,10 +39,21 @@ public class JiraServiceAdapter {
     @Inject
     private String password;
 
+    @Inject
+    private Config configuration;
+
+    @Inject
+    private Instance<PaymentService> paymentService;
+
     private HashMap<String, Long> issueTypes = new HashMap<>();
 
     @PostConstruct
     public void init() {
+        configuration.getPropertyNames().forEach(p -> LOG.info("property {}", p));
+        Annotation creditAnnotation = new AnnotationLiteral<Credit>() {
+        };
+        paymentService.select(creditAnnotation).get().pay(4);
+        paymentService.forEach(p -> LOG.info("found service {}", p));
         createClient().getMetadataClient()
                       .getIssueTypes()
                       .claim()

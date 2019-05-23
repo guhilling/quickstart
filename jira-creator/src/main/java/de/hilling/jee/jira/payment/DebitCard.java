@@ -1,4 +1,4 @@
-package de.hilling.jee.jira;
+package de.hilling.jee.jira.payment;
 
 @Debit
 public class DebitCard implements PaymentService {

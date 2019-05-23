@@ -5,6 +5,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import de.hilling.jee.jira.payment.Credit;
+import de.hilling.jee.jira.payment.PaymentService;
 import de.hilling.jee.jpa.ReceivedRequest;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -47,12 +49,13 @@ public class JiraServiceAdapter {
 
     private HashMap<String, Long> issueTypes = new HashMap<>();
 
+    private static class DebitAnnotation extends AnnotationLiteral<Credit> implements Credit {
+    }
+
+
     @PostConstruct
     public void init() {
         configuration.getPropertyNames().forEach(p -> LOG.info("property {}", p));
-        Annotation creditAnnotation = new AnnotationLiteral<Credit>() {
-        };
-        paymentService.select(creditAnnotation).get().pay(4);
         paymentService.forEach(p -> LOG.info("found service {}", p));
         createClient().getMetadataClient()
                       .getIssueTypes()
@@ -63,6 +66,9 @@ public class JiraServiceAdapter {
     public void createIssue(@NotNull @Valid ReceivedRequest request) {
         long issueTypeId = issueTypes.get(request.getType());
         try {
+            Annotation creditAnnotation = new AnnotationLiteral<Credit>() {
+            };
+            paymentService.select(new DebitAnnotation()).get().pay(4);
             final IssueInput issueInput = new IssueInputBuilder().setIssueTypeId(issueTypeId)
                                                                  .setDescription(request.getDescription())
                                                                  .setSummary(request.getSummary())

@@ -1,4 +1,4 @@
-package de.hilling.jee.jira;
+package de.hilling.jee.jira.payment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

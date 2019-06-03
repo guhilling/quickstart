@@ -4,6 +4,7 @@ import de.hilling.jee.jpa.ReceivedRequest;
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.microprofile.ConfigPropertyValue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 @ExtendWith(CdiTestJunitExtension.class)
 @ConfigPropertyValue(name = "jira.username", value = "gunnar@hilling.de")
 @ConfigPropertyValue(name = "jira.uri", value = "https://hilling.atlassian.net")
+@Disabled
 class JiraServiceAdapterTest {
 
     @Inject

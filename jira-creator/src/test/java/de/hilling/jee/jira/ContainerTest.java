@@ -1,6 +1,7 @@
 package de.hilling.jee.jira;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
+@Disabled
 class ContainerTest {
 
     private static final Logger POSTGRESQL_LOG = LoggerFactory.getLogger("org.postgresql.server");

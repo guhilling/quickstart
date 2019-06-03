@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class JsonRequestParserTest {
 
-    public static final String PROJECT_CDIT = "{ \"type\": \"Bug\", \"summary\": \"Alles kaputt!\", \"project\": \"CDIT\"}";
+    public static final String PROJECT_CDIT = "{ \"type\": \"Bug\", \"description\": \"Test\", \"summary\": \"Alles kaputt!\", \"project\": \"CDIT\"}";
     private JsonRequestParser parser;
 
     @BeforeEach

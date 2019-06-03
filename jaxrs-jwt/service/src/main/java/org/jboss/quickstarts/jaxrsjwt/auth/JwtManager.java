@@ -16,24 +16,19 @@
  */
 package org.jboss.quickstarts.jaxrsjwt.auth;
 
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.RSASSASigner;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import javax.enterprise.context.ApplicationScoped;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-
-import com.nimbusds.jose.JOSEObjectType;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.RSASSASigner;
 
 @ApplicationScoped
 public class JwtManager {
@@ -65,7 +60,7 @@ public class JwtManager {
     }
 
     private static final PrivateKey privateKey;
-    private static final int TOKEN_VALIDITY = 14400;
+    private static final int TOKEN_VALIDITY = 86400;
     private static final String CLAIM_ROLES = "groups";
     private static final String ISSUER = "quickstart-jwt-issuer";
     private static final String AUDIENCE = "jwt-audience";

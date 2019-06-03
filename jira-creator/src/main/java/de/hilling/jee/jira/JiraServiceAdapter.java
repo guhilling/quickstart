@@ -6,6 +6,7 @@ import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import de.hilling.jee.jpa.ReceivedRequest;
 import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.Gauge;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-@Metered(absolute = true)
+@Metered(absolute = true, name = "jira")
 public class JiraServiceAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JiraServiceAdapter.class);
@@ -32,6 +33,10 @@ public class JiraServiceAdapter {
     @Metric(description = "No of errors when creating JIRA Issues",
             displayName = "JIRAErrorCount")
     private Counter jiraErrorCount;
+
+    @Inject
+    @Metric
+    private Gauge<Integer> queueDepth;
 
     @Inject
     public JiraServiceAdapter(JiraServerConfiguration serverConfiguration, JiraRestClient jiraRestClient) {

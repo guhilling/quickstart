@@ -39,7 +39,7 @@ class JiraServiceAdapterMockedBackendsTest {
     @Test
     void createIssueOnOtherSystem() {
         doThrow(new RuntimeException("test")).when(connectionConfiguration)
-                                             .getJiraURI();
+                                            .getJiraURI();
         assertThrows(RuntimeException.class,
                 () -> serviceAdapter.createIssue(request),
                 "test");

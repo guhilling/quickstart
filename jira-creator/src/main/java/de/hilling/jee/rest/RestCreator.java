@@ -1,6 +1,5 @@
 package de.hilling.jee.rest;
 
-import de.hilling.jee.jira.JiraServiceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ public class RestCreator {
     private static final Logger LOG = LoggerFactory.getLogger(RestCreator.class);
 
     @Inject
-    private JiraServiceAdapter serviceAdapter;
+    private BackendService backendService;
 
     @Context
     private SecurityContext securityContext;
@@ -27,6 +26,11 @@ public class RestCreator {
     @POST
     public void createIssue() {
         final Principal userPrincipal = securityContext.getUserPrincipal();
-        LOG.info("created issue");
+        try {
+            backendService.verify(null);
+            LOG.info("created issue");
+        } catch (RuntimeException re) {
+            LOG.error("error creating", re);
+        }
     }
 }

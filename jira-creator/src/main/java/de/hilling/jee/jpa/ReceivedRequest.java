@@ -17,6 +17,7 @@ public class ReceivedRequest {
     private String description;
     private String summary;
     private LocalDateTime requestedAt;
+    private RequestState state = RequestState.FAILED;
 
     @Override
     public String toString() {

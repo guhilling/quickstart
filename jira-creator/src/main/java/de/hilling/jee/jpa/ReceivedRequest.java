@@ -16,7 +16,6 @@ public class ReceivedRequest {
     private String project;
     private String description;
     private String summary;
-    private String project;
     private LocalDateTime requestedAt;
 
     @Override
@@ -72,11 +71,4 @@ public class ReceivedRequest {
         this.project = project;
     }
 
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
 }

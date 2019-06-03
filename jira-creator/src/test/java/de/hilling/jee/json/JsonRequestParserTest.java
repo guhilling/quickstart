@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class JsonRequestParserTest {
 
+    public static final String PROJECT_CDIT = "{ \"type\": \"Bug\", \"summary\": \"Alles kaputt!\", \"project\": \"CDIT\"}";
     private JsonRequestParser parser;
 
     @BeforeEach
@@ -16,7 +17,8 @@ class JsonRequestParserTest {
 
     @Test
     void parse() {
-        final ReceivedRequest receivedRequest = parser.parse("{ \"type\": \"Bug\", \"summary\": \"Alles kaputt!\"}");
+        final ReceivedRequest receivedRequest = parser.parse(PROJECT_CDIT);
         Assertions.assertEquals("Bug", receivedRequest.getType());
+        Assertions.assertEquals("CDIT", receivedRequest.getProject());
     }
 }

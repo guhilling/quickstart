@@ -4,87 +4,80 @@ import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
-import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
-import de.hilling.jee.jira.payment.Credit;
-import de.hilling.jee.jira.payment.PaymentService;
 import de.hilling.jee.jpa.ReceivedRequest;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.Gauge;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.lang.annotation.Annotation;
-import java.net.URI;
-import java.util.HashMap;
 
 @ApplicationScoped
+@Metered(absolute = true, name = "jira")
 public class JiraServiceAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JiraServiceAdapter.class);
 
-    @ConfigProperty(name = "jira.uri", defaultValue = "http://localhost:8081")
-    @Inject
-    private String jiraUri;
-
-    @ConfigProperty(name = "jira.username", defaultValue = "dummy")
-    @Inject
-    private String username;
-
-    @ConfigProperty(name = "jira.password", defaultValue = "dummy")
-    @Inject
-    private String password;
+    private final JiraServerConfiguration serverConfiguration;
+    private final JiraRestClient jiraRestClient;
 
     @Inject
-    private Config configuration;
+    @Metric(description = "No of requested JIRA Issues",
+            displayName = "JIRARequestCount")
+    private Counter requestCount;
 
     @Inject
-    private Instance<PaymentService> paymentService;
+    @Metric(description = "No of errors when creating JIRA Issues",
+            displayName = "JIRAErrorCount")
+    private Counter jiraErrorCount;
 
-    private HashMap<String, Long> issueTypes = new HashMap<>();
+    @Inject
+    @Metric
+    private Gauge<Integer> queueDepth;
 
-    private static class DebitAnnotation extends AnnotationLiteral<Credit> implements Credit {
+    @Inject
+    public JiraServiceAdapter(JiraServerConfiguration serverConfiguration, JiraRestClient jiraRestClient) {
+        this.serverConfiguration = serverConfiguration;
+        this.jiraRestClient = jiraRestClient;
     }
 
-
-    @PostConstruct
-    public void init() {
-        configuration.getPropertyNames().forEach(p -> LOG.info("property {}", p));
-        paymentService.forEach(p -> LOG.info("found service {}", p));
-        createClient().getMetadataClient()
-                      .getIssueTypes()
-                      .claim()
-                      .forEach(i -> issueTypes.put(i.getName(), i.getId()));
+    protected JiraServiceAdapter() {
+        this(null, null);
     }
 
-    public void createIssue(@NotNull @Valid ReceivedRequest request) {
-        long issueTypeId = issueTypes.get(request.getType());
+    public void createIssue(ReceivedRequest request) {
+        requestCount.inc();
         try {
-            Annotation creditAnnotation = new AnnotationLiteral<Credit>() {
-            };
-            paymentService.select(new DebitAnnotation()).get().pay(4);
+            Long issueTypeId = serverConfiguration.issueIdForType(request.getType());
             final IssueInput issueInput = new IssueInputBuilder().setIssueTypeId(issueTypeId)
                                                                  .setDescription(request.getDescription())
                                                                  .setSummary(request.getSummary())
                                                                  .setProjectKey(request.getProject())
                                                                  .build();
-            final BasicIssue issue = createClient().getIssueClient()
+
+            final BasicIssue issue = jiraRestClient.getIssueClient()
                                                    .createIssue(issueInput)
                                                    .claim();
             LOG.debug("created issue {}", issue);
-        } catch (Exception e) {
-            LOG.error("error", e);
+        } catch (RuntimeException re) {
+            jiraErrorCount.inc();
+            LOG.error("creating issue from request {} failed", request, re);
+            throw re;
         }
     }
 
-    private JiraRestClient createClient() {
-        return new AsynchronousJiraRestClientFactory()
-                .createWithBasicHttpAuthentication(URI.create(jiraUri), username, password);
+    public void describeType(String type) {
+        try {
+            jiraRestClient.getMetadataClient()
+                          .getIssueTypes()
+                          .claim()
+                          .forEach(t -> LOG.debug("type {}", t));
+        } catch (RuntimeException re) {
+            LOG.error("finding type  {} failed", type, re);
+            throw re;
+        }
     }
 }

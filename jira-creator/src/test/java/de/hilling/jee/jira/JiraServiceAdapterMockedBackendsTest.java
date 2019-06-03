@@ -4,20 +4,26 @@ import de.hilling.jee.jpa.ReceivedRequest;
 import de.hilling.junit.cdi.CdiTestJunitExtension;
 import de.hilling.junit.cdi.microprofile.ConfigPropertyValue;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.inject.Inject;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+
 @ExtendWith(CdiTestJunitExtension.class)
+@ExtendWith(MockitoExtension.class)
 @ConfigPropertyValue(name = "jira.username", value = "gunnar@hilling.de")
 @ConfigPropertyValue(name = "jira.uri", value = "https://hilling.atlassian.net")
-@Disabled
-class JiraServiceAdapterTest {
+class JiraServiceAdapterMockedBackendsTest {
 
     @Inject
     private JiraServiceAdapter serviceAdapter;
+    @Mock
+    private JiraServerConnectionConfiguration connectionConfiguration;
 
     private ReceivedRequest request;
 
@@ -32,11 +38,12 @@ class JiraServiceAdapterTest {
 
     @Test
     void createIssueOnOtherSystem() {
-        serviceAdapter.createIssue(request);
+        doThrow(new RuntimeException("test")).when(connectionConfiguration)
+                                            .getJiraURI();
+        assertThrows(RuntimeException.class,
+                () -> serviceAdapter.createIssue(request),
+                "test");
+
     }
 
-    @Test
-    void describeIssueType() {
-        serviceAdapter.describeType(request.getType());
-    }
 }

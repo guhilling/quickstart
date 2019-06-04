@@ -23,7 +23,7 @@ public class RequestReceiver implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestReceiver.class);
     @Inject
-    RequestPersistenceService requestPersistenceService;
+    private RequestPersistenceService requestPersistenceService;
     @Inject
     private JiraServiceAdapter serviceAdapter;
     @Inject
